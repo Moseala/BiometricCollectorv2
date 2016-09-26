@@ -27,6 +27,7 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -186,11 +187,20 @@ public class MainBMGUI extends javax.swing.JFrame{
             jTextArea1.setText("Please write a short paragraph about what has happened today.");
         }
         try {
-            //this.wait();
-            while(!request.hasUserAccepted()){
-                
+            try {
+                synchronized(request){
+                    while(!request.hasUserAccepted()){
+                        request.wait();
+                    }
+                    outFile = new BFileWriter(request.getFile(), questionType);
+                }
+            } catch (InterruptedException ex) {
+                outFile = new BFileWriter(request.getFile(), questionType);
             }
-            outFile = new BFileWriter(request.getFile(), questionType);
+            /*while(!request.hasUserAccepted()){
+                
+            }*/
+            //outFile = new BFileWriter(request.getFile(), questionType);
         } catch (IOException io) {
             JOptionPane.showMessageDialog(this,io.getMessage());
         }/* catch (InterruptedException ex) {

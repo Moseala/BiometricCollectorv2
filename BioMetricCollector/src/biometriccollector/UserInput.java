@@ -8,6 +8,9 @@ package biometriccollector;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -16,6 +19,7 @@ import java.nio.file.Paths;
 public class UserInput extends javax.swing.JDialog {
     //Thread me;
     private static boolean flagConfirm = false;
+    private File uFile;
     /**
      * Creates new form UserInput
      * @param parent
@@ -109,7 +113,20 @@ public class UserInput extends javax.swing.JDialog {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         flagConfirm = true;
-        //this.notifyAll(); throws Illegal monitor state excep
+        System.out.println(""+ jTextField1.getText());
+        File uFile = new File(""+Paths.get(jTextField1.getText()));
+        if(!uFile.exists()){
+            try {
+                uFile.createNewFile();
+            } catch (IOException ex) {
+                Logger.getLogger(UserInput.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        flagConfirm = false; //reset flag
+        synchronized(this){
+            this.notify();
+        }
+        //this.notifyAll(); //throws Illegal monitor state excep
         this.setVisible(false);
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -164,13 +181,6 @@ public class UserInput extends javax.swing.JDialog {
     // End of variables declaration//GEN-END:variables
 
     public File getFile() throws IOException {
-                
-        System.out.println(""+ jTextField1.getText());
-        File uFile = new File(""+Paths.get(jTextField1.getText()));
-        if(!uFile.exists()){
-            uFile.createNewFile();
-        }
-        flagConfirm = false; //reset flag
         return  uFile;
     }
 
